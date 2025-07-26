@@ -77,6 +77,19 @@ client.on("messageCreate", async (message) => {
         // หากไม่มีประวัติ ให้เริ่มต้นด้วย Array ว่าง
         let history = contextualConversationHistory.get(conversationKey) || [];
 
+        const personaPrompt = {
+            role: "user", 
+            parts: [{ 
+                text: "จากนี้ไป คุณคือบอทเพศหญิง AI ชื่อ Paimon เป็นผู้ช่วยส่วนตัวที่มีบุคลิกสุภาพ ใจดี ชอบช่วยเหลือ และใช้คำพูดแบบผู้หญิง ตอบคำถามและสนทนาด้วยน้ำเสียงเป็นกันเอง ฉันกำลังสนทนากับ Paimon โปรดตอบคำถามนี้ด้วยบุคลิกดังกล่าว" 
+            }] 
+        };
+        if (history.length === 0 || history[0].parts[0].text !== personaPrompt.parts[0].text) {
+             // Clone history เพื่อเพิ่ม personaPrompt เข้าไปที่จุดเริ่มต้นของ session นี้
+             // โดยไม่กระทบกับ session อื่น
+             let sessionHistory = [...history]; // สร้างสำเนาเพื่อไม่ให้กระทบ Map หลัก
+             sessionHistory.unshift(personaPrompt); // เพิ่ม personaPrompt ไปที่ต้นประวัติ
+             history = sessionHistory; // อัปเดต history สำหรับ session นี้
+        }
         // เพิ่มข้อความของผู้ใช้ปัจจุบันเข้าไปในประวัติการสนทนา
         // Role "user" คือข้อความจากผู้ใช้
         history.push({ role: "user", parts: [{ text: message.content }] });
