@@ -36,8 +36,8 @@ client.on("messageCreate", async (message) => {
 
         await message.channel.sendTyping();
 
-        // ดึงประวัติการสนทนาสำหรับ Channel นี้
-        let history = conversationHistory.get(message.channel.id) || [];
+        const conversationKey = `${message.author.id}_${message.channel.id}`;
+        let history = contextualConversationHistory.get(conversationKey) || [];
 
         // เพิ่มข้อความของผู้ใช้ปัจจุบันเข้าไปในประวัติ
         history.push({ role: "user", parts: [{ text: message.content }] });
@@ -46,7 +46,7 @@ client.on("messageCreate", async (message) => {
         const chat = model.startChat({
             history: history,
             generationConfig: {
-                maxOutputTokens: 2000, // กำหนด max output tokens เพื่อไม่ให้ response ยาวเกินไป
+                maxOutputTokens: 2500, // กำหนด max output tokens เพื่อไม่ให้ response ยาวเกินไป
             },
      });
         
@@ -75,13 +75,14 @@ client.on("messageCreate", async (message) => {
         }
 
 
-        if (generatedText.length > 2000) {
+        if (generatedText.length > 2500) {
             message.reply("ฉันมีเรื่องจะพูดเยอะเกินไปสำหรับ Discord ที่จะแสดงในข้อความเดียวค่ะ");
         } else {
             message.reply({
                 content: generatedText,
             });
         }
+        contextualConversationHistory.set(conversationKey, history);
     }
         
     } catch (error) {
