@@ -52,7 +52,10 @@ client.on("messageCreate", async (message) => {
     try {
         // คำสั่งพิเศษสำหรับตรวจสอบ Channel ID ของบอต
         if (message.content === "status?") {
-            message.reply(`บอทกำลังทำงานใน Channel ID: ${message.channel.name}`);
+            message.reply(`สวัสดี ${message.author.displayName}`);
+            message.reply(
+                `บอทกำลังทำงานใน Channel ID: ${message.channel.name}`,
+            );
             return; // หยุดการทำงานของบอตสำหรับคำสั่งนี้
         }
 
