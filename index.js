@@ -1,6 +1,6 @@
 const discord = require("discord.js");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-require('dotenv').config(); // โหลดค่าจากไฟล์ .env
+require("dotenv").config(); // โหลดค่าจากไฟล์ .env
 
 const MODEL = "gemini-2.5-flash"; // กำหนดโมเดล AI ที่ใช้
 const API_KEY = process.env.API_KEY; // ดึง Gemini API Key จาก Environment Variables
@@ -9,7 +9,9 @@ const CHANNEL_ID = process.env.CHANNEL_ID; // ดึง Channel ID จาก Env
 
 // ตรวจสอบว่า Key ถูกโหลดมาครบหรือไม่ (เป็นแนวทางปฏิบัติที่ดี)
 if (!API_KEY || !BOT_TOKEN || !CHANNEL_ID) {
-    console.error("Error: Missing one or more environment variables. Make sure .env file is configured correctly.");
+    console.error(
+        "Error: Missing one or more environment variables. Make sure .env file is configured correctly.",
+    );
     process.exit(1); // ออกจากโปรแกรมหากไม่มี Key ที่จำเป็น
 }
 
@@ -78,17 +80,22 @@ client.on("messageCreate", async (message) => {
         let history = contextualConversationHistory.get(conversationKey) || [];
 
         const personaPrompt = {
-            role: "user", 
-            parts: [{ 
-                text: "จากนี้ไป คุณคือบอทเพศหญิง AI ชื่อ Paimon เป็นผู้ช่วยส่วนตัวที่มีบุคลิกสุภาพ ใจดี ชอบช่วยเหลือ และใช้คำพูดแบบผู้หญิง ตอบคำถามและสนทนาด้วยน้ำเสียงเป็นกันเอง ฉันกำลังสนทนากับ Paimon โปรดตอบคำถามนี้ด้วยบุคลิกดังกล่าว" 
-            }] 
+            role: "user",
+            parts: [
+                {
+                    text: "จากนี้ไป คุณคือบอท Paimon อ้างอิงลักษณะการพูดของตัวละคร Paimon จากเกม Genshin Impact",
+                },
+            ],
         };
-        if (history.length === 0 || history[0].parts[0].text !== personaPrompt.parts[0].text) {
-             // Clone history เพื่อเพิ่ม personaPrompt เข้าไปที่จุดเริ่มต้นของ session นี้
-             // โดยไม่กระทบกับ session อื่น
-             let sessionHistory = [...history]; // สร้างสำเนาเพื่อไม่ให้กระทบ Map หลัก
-             sessionHistory.unshift(personaPrompt); // เพิ่ม personaPrompt ไปที่ต้นประวัติ
-             history = sessionHistory; // อัปเดต history สำหรับ session นี้
+        if (
+            history.length === 0 ||
+            history[0].parts[0].text !== personaPrompt.parts[0].text
+        ) {
+            // Clone history เพื่อเพิ่ม personaPrompt เข้าไปที่จุดเริ่มต้นของ session นี้
+            // โดยไม่กระทบกับ session อื่น
+            let sessionHistory = [...history]; // สร้างสำเนาเพื่อไม่ให้กระทบ Map หลัก
+            sessionHistory.unshift(personaPrompt); // เพิ่ม personaPrompt ไปที่ต้นประวัติ
+            history = sessionHistory; // อัปเดต history สำหรับ session นี้
         }
         // เพิ่มข้อความของผู้ใช้ปัจจุบันเข้าไปในประวัติการสนทนา
         // Role "user" คือข้อความจากผู้ใช้
@@ -123,22 +130,28 @@ client.on("messageCreate", async (message) => {
 
         // ตรวจสอบว่าคำตอบถูกบล็อกเนื่องจากนโยบายความปลอดภัยหรือไม่
         // (promptFeedback?.blockReason เป็นวิธีที่ละเอียดกว่า)
-        if (response.text().includes("Response was blocked due to SAFETY") || response.promptFeedback?.blockReason) {
-            message.reply("ขออภัยค่ะ ฉันไม่สามารถให้คำตอบนั้นได้ เพื่อรักษาเนื้อหาให้ปลอดภัยและเหมาะสม");
+        if (
+            response.text().includes("Response was blocked due to SAFETY") ||
+            response.promptFeedback?.blockReason
+        ) {
+            message.reply(
+                "ขออภัยค่ะ ฉันไม่สามารถให้คำตอบนั้นได้ เพื่อรักษาเนื้อหาให้ปลอดภัยและเหมาะสม",
+            );
             return;
         }
 
         // ตรวจสอบความยาวของข้อความที่ AI ตอบกลับ
         if (generatedText.length > 2000) {
             // Discord มีข้อจำกัดความยาวข้อความ 2000 ตัวอักษร
-            message.reply("ฉันมีเรื่องจะพูดเยอะเกินไปสำหรับ Discord ที่จะแสดงในข้อความเดียวค่ะ");
+            message.reply(
+                "ฉันมีเรื่องจะพูดเยอะเกินไปสำหรับ Discord ที่จะแสดงในข้อความเดียวค่ะ",
+            );
         } else {
             // ส่งข้อความที่ AI ตอบกลับไปยัง Channel
             message.reply({
                 content: generatedText,
             });
         }
-
     } catch (error) {
         // จัดการข้อผิดพลาดที่เกิดขึ้น
         console.error("Error:", error.message);
