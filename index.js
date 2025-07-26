@@ -1,13 +1,13 @@
 const discord = require("discord.js");
 const { GoogleGenerativeAI } = require("@google/generative-ai");
-const fs = require('fs').promises; // Import fs.promises สำหรับการทำงานกับไฟล์แบบ Asynchronous
+const fs = require("fs").promises; // Import fs.promises สำหรับการทำงานกับไฟล์แบบ Asynchronous
 require("dotenv").config(); // โหลดค่าจากไฟล์ .env
 
 const MODEL = "gemini-2.5-flash"; // กำหนดโมเดล AI ที่ใช้
 const API_KEY = process.env.API_KEY; // ดึง Gemini API Key จาก Environment Variables
 const BOT_TOKEN = process.env.BOT_TOKEN; // ดึง Discord Bot Token จาก Environment Variables
 const CHANNEL_ID = process.env.CHANNEL_ID; // ดึง Channel ID จาก Environment Variables (สำหรับกรองข้อความ)
-const HISTORY_FILE = 'conversation_history.json'; // กำหนดชื่อไฟล์สำหรับเก็บประวัติการสนทนา
+const HISTORY_FILE = "conversation_history.json"; // กำหนดชื่อไฟล์สำหรับเก็บประวัติการสนทนา
 
 // ตรวจสอบว่า Key ถูกโหลดมาครบหรือไม่ (เป็นแนวทางปฏิบัติที่ดี)
 if (!API_KEY || !BOT_TOKEN || !CHANNEL_ID) {
@@ -29,7 +29,7 @@ const client = new discord.Client({
     intents: [
         discord.GatewayIntentBits.Guilds,
         discord.GatewayIntentBits.GuildMessages,
-        discord.GatewayIntentBits.MessageContent // จำเป็นสำหรับอ่านเนื้อหาข้อความ
+        discord.GatewayIntentBits.MessageContent, // จำเป็นสำหรับอ่านเนื้อหาข้อความ
     ],
 });
 
@@ -42,7 +42,7 @@ const contextualConversationHistory = new Map();
 // ฟังก์ชันสำหรับโหลดประวัติการสนทนาจากไฟล์
 async function loadConversationHistory() {
     try {
-        const data = await fs.readFile(HISTORY_FILE, 'utf8');
+        const data = await fs.readFile(HISTORY_FILE, "utf8");
         // แปลง JSON string กลับเป็น Map
         const parsedData = JSON.parse(data);
         // ตรวจสอบว่า parsedData เป็น Array ของ [key, value] pairs หรือไม่
@@ -52,11 +52,15 @@ async function loadConversationHistory() {
             });
             console.log("Conversation history loaded successfully.");
         } else {
-            console.warn("Loaded history file is not in expected array format. Starting with empty history.");
+            console.warn(
+                "Loaded history file is not in expected array format. Starting with empty history.",
+            );
         }
     } catch (error) {
-        if (error.code === 'ENOENT') {
-            console.log("No conversation history file found. Starting with empty history.");
+        if (error.code === "ENOENT") {
+            console.log(
+                "No conversation history file found. Starting with empty history.",
+            );
         } else {
             console.error("Error loading conversation history:", error.message);
         }
@@ -68,7 +72,11 @@ async function saveConversationHistory() {
     try {
         // แปลง Map เป็น Array ของ [key, value] pairs เพื่อให้ JSON.stringify ทำงานได้
         const dataToSave = Array.from(contextualConversationHistory.entries());
-        await fs.writeFile(HISTORY_FILE, JSON.stringify(dataToSave, null, 2), 'utf8');
+        await fs.writeFile(
+            HISTORY_FILE,
+            JSON.stringify(dataToSave, null, 2),
+            "utf8",
+        );
         console.log("Conversation history saved successfully.");
     } catch (error) {
         console.error("Error saving conversation history:", error.message);
@@ -134,7 +142,7 @@ client.on("messageCreate", async (message) => {
             role: "user",
             parts: [
                 {
-                    text: "จากนี้ไป คุณคือบอท Paimon อ้างอิงลักษณะการพูดของตัวละคร Paimon จากเกม Genshin Impact ที่มีความรู้รอบด้าน สามารถถามข้อมูลจากเกมอื่นๆได้ทุกเกม จากนี้ Paimon จะทำงานเป็น AI อยู่ใน Discord Paimon รู้คำสั่งของโปรแกรม Discord ทั้งหมดที่ใช้งานได้และสามารถใช้ทำสั่งได้ทันที เมื่อผู้สนทนาต้องการ",
+                    text: "จากนี้ไป คุณคือบอท Paimon อ้างอิงลักษณะการพูดของตัวละคร Paimon จากเกม Genshin Impact ที่มีความรู้รอบด้าน สามารถถามข้อมูลจากเกมอื่นๆได้ทุกเกม จากนี้ Paimon จะทำงานเป็น AI อยู่ใน Discord Paimon รู้คำสั่งของโปรแกรม Discord ทั้งหมดที่ใช้งานได้และสามารถใช้ทำสั่งได้ทันที เมื่อผู้สนทนาต้องการ เมื่อ Paimon ต้องการพูดกับทุกคนในช่อง ให้ใช้ @everyone ในข้อความด้วยนะ!",
                 },
             ],
         };
