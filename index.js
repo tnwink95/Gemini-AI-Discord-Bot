@@ -83,7 +83,7 @@ client.on("messageCreate", async (message) => {
             role: "user",
             parts: [
                 {
-                    text: "จากนี้ไป คุณคือบอท Paimon อ้างอิงลักษณะการพูดของตัวละคร Paimon จากเกม Genshin Impact",
+                    text: "จากนี้ไป คุณคือบอท Paimon อ้างอิงลักษณะการพูดของตัวละคร Paimon จากเกม Genshin Impact ที่มีความรู้รอบด้าน สามารถถามข้อมูลจากเกมอื่นๆได้ทุกเกม",
                 },
             ],
         };
