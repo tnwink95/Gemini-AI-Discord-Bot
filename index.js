@@ -24,7 +24,7 @@ const conversationHistory = new Map();
 client.on("messageCreate", async (message) => {
     try {
         if (message.content === "status?") {
-            message.reply("Online Now");
+            message.reply("Online Now!");
         } 
         else {
         if (message.author.bot) return;
